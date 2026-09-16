@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国新零售×快消品 门店补货解决方案 (DMAIC)</title>
+    <style>
+        :root {
+            --primary-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ========== 0. Header 卡片 ========== */
+        .header-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: 36px 32px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-card::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            pointer-events: none;
+        }
+        .header-card h1 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            line-height: 1.3;
+        }
+        .header-card .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            font-size: 14px;
+            color: #94a3b8;
+            align-items: center;
+        }
+        .header-card .meta div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-card .meta a { 
+            color: #38bdf8; 
+            text-decoration: none; 
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .header-card .meta a:hover { color: #7dd3fc; text-decoration: underline; }
+
+        /* ========== Sticky 导航条 ========== */
+        .sticky-nav {
+            position: sticky;
+            top: 16px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 999px;
+            box-shadow: var(--shadow-md);
+            padding: 8px 12px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            align-self: center;
+            max-width: 100%;
+        }
+        .sticky-nav::-webkit-scrollbar { display: none; }
+        .sticky-nav a {
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 999px;
+            background: transparent;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .sticky-nav a:hover {
+            background: #f1f5f9;
+            color: var(--accent-blue);
+        }
+
+        /* 通用 Section 卡片 */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 32px;
+            border: 1px solid var(--border-color);
+            scroll-margin-top: 80px;
+        }
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-main);
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            position: relative;
+        }
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--accent-blue);
+        }
+        .section-title span { font-size: 14px; font-weight: normal; color: var(--text-muted); }
+
+        /* DEFINE 现代布局 */
+        .define-grid {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 28px;
+            align-items: start;
+        }
+        .define-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .define-block {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+        .define-block h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .define-block h3::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+        .define-img-wrapper {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            position: sticky;
+            top: 80px;
+        }
+        .define-img-wrapper img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* MEASUREMENT 网格卡片 */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--accent-blue);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .metric-card h4 { 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            margin-bottom: 10px;
+        }
+        .metric-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .metric-target {
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+            font-weight: 600;
+            color: #0284c7;
+            font-size: 13px;
+        }
+
+        /* ANALYSIS & Tab 统一样式 */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 12px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--accent-blue);
+            box-shadow: var(--shadow-sm);
+        }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ANALYSIS 表格优化 */
+        .analysis-table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            background: #ffffff;
+            text-align: left;
+        }
+        .analysis-table th {
+            background-color: #f8fafc;
+            color: #334155;
+            font-weight: 700;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+        .analysis-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+            color: #475569;
+            line-height: 1.7;
+        }
+        .analysis-table tr:last-child td { border-bottom: none; }
+        .analysis-table tr:nth-child(even) { background-color: #fdfefe; }
+        .analysis-table tr:hover { background-color: #f8fafc; }
+
+        /* 图片展示常规封装 */
+        .img-display-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+        }
+        .img-display-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .placeholder-text {
+            color: #64748b;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: var(--radius-md);
+            border: 1px dashed #cbd5e1;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 1024px) {
+            .define-grid { grid-template-columns: 1fr; }
+            .define-img-wrapper { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ==================== 0. 顶部 Header 卡片 ==================== -->
+    <div class="header-card">
+        <h1>新零售低价高频快消场景的补货天花板</h1>
+        <div class="meta">
+            <div>
+                <span>解决方案架构师：</span>
+                <b style="color: #ffffff;">银时</b>
+            </div>
+            <div>
+                <span>联系方式：</span>
+                <a href="mailto:operatesmoothly@outlook.com">operatesmoothly@outlook.com</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 独立 Sticky 导航条 ==================== -->
+    <nav class="sticky-nav">
+        <a href="#define">Define</a>
+        <a href="#measurement">Measurement</a>
+        <a href="#analysis">Analysis</a>
+        <a href="#improvement">Improvement</a>
+        <a href="#control">Control</a>
+    </nav>
+
+    <!-- ==================== 1. DEFINE ==================== -->
+    <section class="section-card" id="define">
+        <div class="section-title">Define <span> 项目背景，问题陈述，与项目范围 </span></div>
+        
+        <div class="define-grid">
+            <div class="define-content">
+                <div class="define-block">
+                    <h3>项目背景 (The Context)</h3>
+                    <p style="font-size: 13.5px; color: #475569; line-height: 1.8;">
+                        当 Covid-19 在武汉爆发，某<b>低价(平均售价等同于2美金)快消品连锁品牌</b>的华中区（7个省，415个门店）瞬间陷入库存双峰危机：缺货率与呆滞库存并存，双双创下历史新高。<br>
+                        管理层深感棘手：<b>补货认知短板卡了规模增长(割韭菜)的脖子</b>，意识到品牌知名度和流量在这个场景没用。为此，该企业启动外部顾问竞标，寻找破局方案。
+                    </p>
+                </div>
+
+                <div class="define-block">
+                    <h3>问题陈述 (Problem Statement)</h3>
+                    <p style="font-size: 13.5px; color: #475569; line-height: 1.8; margin-bottom: 10px;">
+                        1. 在“批发->倾销->抢市场”的GTM策略下，几十万长尾SKU，叠加多渠道多门店，导致上亿个需求计划单元（DFU）的需求信号充满噪音；<br>
+                        2. 突发疫情不仅<b>扰乱销售节奏</b>而且<b>切断中段运输</b>，一线计划员在缺乏约束推演机制的情况下，只能靠“花式编过程”应对：
+                    </p>
+                    <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 14px 16px; margin: 12px 0; border-radius: 6px; font-size: 13px; color: #991b1b; line-height: 1.8;">
+                        (415个门店，33,040 SKU，就是 <b>1,382万个DFU</b>，<br>
+                        若每个DFU需要5秒的计算和审核时间，串行处理需要 19,196小时，<b>2.19年</b>；<br>
+                        如果只聚焦 TOP300 SKU，仍然有 <b>12.5万个DFU</b>，<br>
+                        全量复盘需要 <b>172.9小时</b>，折合 7.2天)
+                    </div>
+                </div>
+
+                <div class="define-block">
+                    <h3>项目范围与目标 (Scope & Goals)</h3>
+                    <p style="font-size: 13.5px; color: #475569; line-height: 1.8;">
+                        <b>POC范围：</b>选取华中区（7省，415家门店）几个核心大品类，33,040个SKU，采用 20年Q4数据 进行实战验证：<br>
+                    </p>
+                </div>
+            </div>
+
+            <div class="define-img-wrapper">
+                <img src="images/运营断层.png" alt="中国新零售全渠道供应链地图">
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 2. MEASUREMENT ==================== -->
+    <section class="section-card" id="measurement">
+        <div class="section-title">Measurement <span>核心指标定义与口径</span></div>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div>
+                    <h4>指标 1：门店日均销售额¥</h4>
+                    <p><strong>口径：</strong>汇总 (每天每店的销量*组合价)/ count(店铺*天数) ----剔除当天无销量的店铺</p>
+                </div>
+                <div class="metric-target">🎯 目标：从¥9千4，提升到¥1万1以上</div>
+            </div>
+            <div class="metric-card">
+                <div>
+                    <h4>指标 2：门店库存周数</h4>
+                    <p><strong>口径：</strong>月至今所有日结库存金额 / 月至今所有销售额（当月销售额=实收价*数量）;<br>
+                    日结库存金额 (按组合价计算，排除装材配件，赠品) = 当天期末库存数量*组合价;
+                    </p>
+                </div>
+                <div class="metric-target">🎯 目标：压在60天以下</div>
+            </div>
+            <div class="metric-card">
+                <div>
+                    <h4>指标 3：门店日均库存金额¥</h4>
+                    <p><strong>口径：</strong>汇总 (每天每店的期末库存*组合价)/count(店铺*天数)</p>
+                </div>
+                <div class="metric-target">🎯 目标：以53万为Baseline,能优化多少优化多少</div>
+            </div>
+            <div class="metric-card">
+                <div>
+                    <h4>指标 4：Top300商品销售占比</h4>
+                    <p><strong>口径：</strong>Top 300 销售额/整体销售额</p>
+                </div>
+                <div class="metric-target">🎯 目标：从37.5% 提升至40%以上</div>
+            </div>
+            <div class="metric-card">
+                <div>
+                    <h4>指标 5：Top300商品缺货率</h4>
+                    <p><strong>口径：</strong>Top 300 SKU 缺货天数 / (Top 300 销售天数 + Top 300 缺货天数)</p>
+                </div>
+                <div class="metric-target">🎯 目标：不强制，以13.6%为Baseline，能优化多少优化多少</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 3. ANALYSIS ==================== -->
+    <section class="section-card" id="analysis">
+        <div class="section-title">Analysis <span>本方案不帮你快速套现离场，但是能帮你精细化运营</span></div>
+        <div class="tabs-nav" id="analysis-nav">
+            <button class="tab-btn" data-target="analysis-1">基于行业特性 配置 破局杠杆</button>
+            <button class="tab-btn" data-target="analysis-2">💡1 需求信号降噪</button>
+            <button class="tab-btn active" data-target="analysis-3">💡2 引入 DDMRP-供应计划方法论天花板</button>
+            <button class="tab-btn" data-target="analysis-4">双轨路径改善核心指标</button>
+        </div>
+
+        <div class="tab-content" id="analysis-1">
+            <div class="analysis-table-wrapper">
+                <table class="analysis-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">维度</th>
+                            <th style="width: 28%;">行业特性 (As-Is / 痛点)</th>
+                            <th style="width: 28%;">数字化转型 虚实分辨 与 核心 GAP</th>
+                            <th style="width: 29%;">破局思路 (To-Be / 数字化填坑)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>需求信号与噪音</strong></td>
+                            <td><strong>优先倾销抢市场（GTM）策略导致时序特征被严重污染：</strong><br>商品低价高频：<$10；<br>产品换代极快；<br>几万长尾SKU；<br>多渠道+多门店(3000+)；<br>上亿个需求计划单元DFU（Demand FCST Unit）;</td>
+                            <td><strong>DFU极度稀疏，信噪比极低：</strong><br>微观Location×SKU预测的CV（变异系数）普遍>1.5，ML模型ROI为负。<br>缺货、促销、窜货导致POS数据严重失真，历史销量无法代表真实需求。</td>
+                            <td><strong>降维与数据净化：</strong><br>1. 放弃微观预测，基于生命周期和销售表现做Item Classification 💡1；<br>2. 预测退化为ADU/移动平均；<br>3. 在Aggregate维度（如门店×品类）看时序特征；<br>4. 先做缺货回填（Demand Pattern Recovery），再谈预测精度优化;</td>
+                        </tr>
+                        <tr>
+                            <td><strong>计划与流程</strong></td>
+                            <td><strong>Process Engineering和Intergrated Business Planning意识薄弱：</strong><br>老板只看结果不管过程；<br>职能部门“花式编过程”；<br>结果指标滞后、多因、难归因;<br><b>个位数的区域计划员，无法及时动态的管理上亿个需求计划单元DFU</b>;</td>
+                            <td><strong>流程节点不互锁，权责交错：</strong><br>过程管控成本>收益，导致组织不信任流程;<br>在缺乏S&OP稳定性时，任何基于FCST精度的前置计划都会失效，形成“猜疑链”;</td>
+                            <td><strong>放弃过程管控，聚焦结果护栏：</strong><br>打造不依赖S&OP稳定性和FCST精度的 Supply Planning Process Re-engineering Solution（破局关键）💡2;<br>聚焦库存健康度（双峰压降），打造自感知，自决策，自适应的异常自动纠错机制💡3;</td>
+                        </tr>
+                        <tr>
+                            <td><strong>组织与决策</strong></td>
+                            <td><strong>信息即权力，高管模糊保留裁量权：</strong><br>数据中台多为老板服务；<br>老板不知细节，向下极限施压，等底下人反馈极限边界。 每一次试探都消耗相互的信任;</td>
+                            <td><strong>权力与控制 > 一线赋能：</strong><br>决策信息以“权力”而非“数据”为轴心;<br>缺乏将<b>“既要又要还要”</b>的冲突约束，转为可计算选项的推演机制;</td>
+                            <td><strong>打造“拍板模拟器（What-if Simulator）”：</strong><br>不求100%赋能一线，只求辅助高层决策尽量给一线减负，减少不必要的内部摩擦;<br>基于约束条件，展现需要Trade-off的关键决策点，并自动生成极端优化下的“保销售/保现金/保履约”多套选项;</td>
+                        </tr>
+                        <tr>
+                            <td><strong>产品与交付</strong></td>
+                            <td><strong>客户数据基础差，POC白嫖方案频发，买断制重定制易烂尾。</strong></td>
+                            <td><strong>客户缺乏买断系统的能力和信用背书：</strong><br>传统交付模式周期长、沉没成本高。在客户没有契约精神的现状下，重资产交付等于把风险全部留给乙方;</td>
+                            <td><strong>独立部署 + 订阅服务（SaaS化）：</strong><br>底层独立（独立数据模型/仓/部署）；<br>按付费提供算力服务；<br>按需推进数据治理（工作量/费用另算）;</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-content" id="analysis-2">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 6px;">2. 需求信号降噪</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13.5px;">覆盖：缺货回填算法、POS清洗逻辑、基于聚合维度的时序特征提取</p>
+                <img src="images/需求降噪.png" alt="需求信号降噪">
+            </div>
+        </div>
+
+        <div class="tab-content active" id="analysis-3">
+            <div class="placeholder-text" style="text-align: left;">
+                <h3 style="text-align: center; font-size: 18px; margin-bottom: 14px; color: var(--text-main);">3. 引入 DDMRP-供应计划方法论天花板</h3>
+                <p style="font-size: 14px; line-height: 1.8; color: #475569; margin-bottom: 16px;">
+                    传统计划员啥时候开始感受到 DDMRP 的海纳百川？需要上下游协同拉扯博弈的时候，举例：<br>
+                    <b>1. MOQ 困境：</b>计算完了补货数量才发现还要根据 最低起订量、箱数修正 --> 对于 DDMRP 来说就是配置一下绿区的组成之一：MOQ 的参数，你怎么下单都比 MOQ 大；<br>
+                    <b>2. 运力争夺：</b>运力紧缺承运商要甩柜了，你是想让人家随机甩柜，还是拿着优先级清单据理力争抢着上车？ --> 依据 Net Flow Position 给补货需求排序，NFS 水位越低，需求优先级越高。
+                </p>
+                <div style="text-align: center;">
+                    <img src="images/DDMRP.jpg" alt="DDMRP 核心框架与净流量方程" style="max-width: 100%; height: auto; border-radius: var(--radius-sm); box-shadow: var(--shadow-md);">
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="analysis-4">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 16px;">降本+增收 双轨路径优化5个核心指标</h3>
+                <img src="images/双轨路径.png" alt="需求信号降噪">
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 4. IMPROVEMENT ==================== -->
+    <section class="section-card" id="improvement">
+        <div class="section-title">Improvement <span>4个角度下钻对比 Before & After</span></div>
+        <div class="tabs-nav" id="improve-nav">
+            <button class="tab-btn active" data-target="improve-1">5个核心指标</button>
+            <button class="tab-btn" data-target="improve-2">增收效果-挽回上亿销售损失</button>
+            <button class="tab-btn" data-target="improve-3">降本效果-补多,销多,结余库存低2千5百万</button>
+            <button class="tab-btn" data-target="improve-4">Top300商品营收占比增加6.9%</button>
+            <button class="tab-btn" data-target="improve-5">自动化可以管理额外9.5%的DFU</button>
+        </div>
+
+        <div class="tab-content active" id="improve-1">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 6px;">5个核心指标</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13.5px;">所有挑战均达标</p>
+                <img src="images/改善_5个指标.png" alt="5个核心指标对比">
+            </div>
+        </div>
+
+        <div class="tab-content" id="improve-2">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 6px;">本案例货值低，因缺货导致的销售额损失远比多补货导致的呆滞库存重要</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13.5px;">
+                    Recall 客户定义的缺货口径，计算取两者交集;<br>
+                    缺货口径：门店可用存库小于等于0，或缺货数量大于0;<br>
+                    缺货数量 = ( 平均发货间隔天数+在途天数 ) 14天日均销 – ( 门店可用库存+门店在途 )
+                </p>
+                <img src="images/改善_挽回上亿销售额.png" alt="挽回上亿销售损失">
+            </div>
+        </div>
+
+        <div class="tab-content" id="improve-3">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 6px;">进销存闭环验证：一段时间内 (9/1 ~ 12/31) 期初+补货-销售=结余库存</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13.5px;">
+                    PS: 销售额上升+结余库存下降 --> 门店库存周转天数自然而然下降
+                </p>
+                <img src="images/改善_门店库存.png" alt="门店库存改善">
+            </div>
+        </div>
+
+        <div class="tab-content" id="improve-4">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 16px;">TOP300商品营收贡献增幅最大</h3>
+                <img src="images/改善_畅销品占比.png" alt="畅销品占比改善">
+            </div>
+        </div>
+
+        <div class="tab-content" id="improve-5">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 16px;">每日店均SKU经营宽度增加331个</h3>
+                <img src="images/改善_SKU宽度.png" alt="SKU经营宽度改善">
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 5. CONTROL ==================== -->
+    <section class="section-card" id="control">
+        <div class="section-title">Control <span>流程固化不开历史倒车</span></div>
+
+        <div class="tabs-nav" id="control-nav">
+            <button class="tab-btn active" data-target="control-1"> 💡3 打开新世界的大门：给 DDMRP 加上自感知，自决策，自适应的类 AI 能力</button>
+            <button class="tab-btn" data-target="control-2">把DDMRP转换成指标才能使用</button>
+            <button class="tab-btn" data-target="control-3">应用数仓架构简单示例</button>
+        </div>
+
+        <div class="tab-content active" id="control-1">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 16px;">自感知、自决策、自适应架构图</h3>
+                <img src="images/自感知自决策自适应.png" alt="自感知自决策自适应架构图">
+            </div>
+        </div>
+
+        <div class="tab-content" id="control-2">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 16px;">将DDMRP方法论转换成指标</h3>
+                <img src="images/DDMRP转化为数据指标.png" alt="将DDMRP方法论转换成指标">
+            </div>
+        </div>
+
+        <div class="tab-content" id="control-3">
+            <div class="img-display-box">
+                <h3 style="font-size: 16px; margin-bottom: 16px;">应用数仓架构简单示例</h3>
+                <img src="images/数仓架构.png" alt="应用数仓架构简单示例">
+            </div>
+        </div>
+
+        <div style="margin-top: 32px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f8fafc; padding: 28px; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+            <h3 style="font-size: 18px; margin-bottom: 20px; color: #38bdf8; border-bottom: 1px solid #334155; padding-bottom: 12px; font-weight: 700;">
+                ⚡ 商业演进与生态延伸 (Go-To-Market Strategy)
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="background: rgba(255,255,255,0.04); padding: 16px; border-left: 4px solid #64748b; border-radius: 4px;">
+                    <h4 style="font-size: 14px; color: #e2e8f0; margin-bottom: 6px; font-weight: 600;">Phase 1: 极限压力测试 (POC 沉淀)</h4>
+                    <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+                        历经头部快消品牌 415 门店、1382万 DFU 的 1 年期测试。战略性承担百万级研发成本，换取 COVID-19 华中区断链与双峰危机的<span style="color: #fbbf24;">“稀缺极端混乱场景的真实数据”</span>与算法淬炼。
+                    </p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.04); padding: 16px; border-left: 4px solid #3b82f6; border-radius: 4px;">
+                    <h3 style="font-size: 14px; color: #e2e8f0; margin-bottom: 6px; font-weight: 600;">Phase 2: 模型成熟与跨行业跃迁</h3>
+                    <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+                        自感知 DDMRP 架构成熟。因新茶饮与快消零售在<span style="color: #38bdf8;">“高频低价、多门店、库存双峰”</span>等痛点高度同源，方案正式启动新茶饮行业的规模化降维部署。
+                    </p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.04); padding: 16px; border-left: 4px solid #10b981; border-radius: 4px;">
+                    <h3 style="font-size: 14px; color: #e2e8f0; margin-bottom: 6px; font-weight: 600;">Phase 3: 混合 SaaS 商业模式</h3>
+                    <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+                        提供<span style="color: #34d399;">“底层独立部署（数据主权） + 算力按需订阅（低成本敏捷接入）”</span>的SaaS化服务，彻底打破传统重定制项目易烂尾的商业魔咒。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- ==================== JS：Tab 切换逻辑 ==================== -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        function setupTabs(navId) {
+            const nav = document.getElementById(navId);
+            if (!nav) return;
+
+            const buttons = nav.querySelectorAll('.tab-btn');
+            const container = nav.parentElement;
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const contents = container.querySelectorAll('.tab-content');
+                    contents.forEach(c => c.classList.remove('active'));
+
+                    const targetId = btn.getAttribute('data-target');
+                    const targetContent = document.getElementById(targetId);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        setupTabs('analysis-nav');
+        setupTabs('improve-nav');
+        setupTabs('control-nav');
+    });
+</script>
+
+</body>
+</html>
